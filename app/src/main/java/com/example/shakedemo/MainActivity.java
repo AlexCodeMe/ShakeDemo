@@ -2,6 +2,7 @@ package com.example.shakedemo;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -23,19 +24,33 @@ public class MainActivity extends AppCompatActivity {
     private SensorEventListener sensorEventListener = new SensorEventListener() {
         @Override
         public void onSensorChanged(SensorEvent sensorEvent) {
-         float x = sensorEvent.values[0];
-         float y = sensorEvent.values[1];
-         float z = sensorEvent.values[2];
-         
-         accelerationCurrentValue = Math.sqrt( (x * x + y * y + z * z) );
-         accelerationPreviousValue = accelerationCurrentValue;
-         double changeInAcceleration = Math.abs(accelerationCurrentValue - accelerationPreviousValue);
+            float x = sensorEvent.values[0];
+            float y = sensorEvent.values[1];
+            float z = sensorEvent.values[2];
 
-         // update textviews
-         txt_currentAccel.setText("Current = " + accelerationCurrentValue);
-         txt_prevAccel.setText(("Prev = " + accelerationPreviousValue));
-         txt_acceleration.setText("Acceleration change = " + changeInAcceleration);
+            accelerationCurrentValue = Math.sqrt( (x * x + y * y + z * z) );
+
+            double changeInAcceleration = Math.abs(accelerationCurrentValue - accelerationPreviousValue);
+            accelerationPreviousValue = accelerationCurrentValue;
+
+            // Update text views with formatted strings
+            txt_currentAccel.setText("Current = " + String.format("%.2f", accelerationCurrentValue));
+            txt_prevAccel.setText("Prev = " + String.format("%.2f", accelerationPreviousValue));
+            txt_acceleration.setText("Acceleration change = " + String.format("%.2f", changeInAcceleration));
+
+            prog_shakeMeter.setProgress((int) changeInAcceleration);
+
+            if (changeInAcceleration > 10) {
+                txt_acceleration.setBackgroundColor(Color.RED);
+            } else if (changeInAcceleration > 5) {
+                txt_acceleration.setBackgroundColor(Color.parseColor("#fcad03"));
+            } else if (changeInAcceleration > 1) {
+                txt_acceleration.setBackgroundColor(Color.YELLOW);
+            } else {
+                txt_acceleration.setBackgroundColor(getResources().getColor(com.google.android.material.R.color.design_default_color_background));
+            }
         }
+
 
 
         @Override
